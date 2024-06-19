@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Coupons</h2>
+    <ul>
+        {% for coupon in coupons %}
+            <li><a href="{% url 'coupon_detail' coupon.pk %}">{{ coupon.name }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}

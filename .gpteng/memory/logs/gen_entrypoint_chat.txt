@@ -1,0 +1,160 @@
+
+2024-06-19T03:36:26.397543
+================================ System Message ================================
+
+You will get information about a codebase that is currently on disk in the current folder.
+The user will ask you to write a script that runs the code in a specific way.
+You will answer with code blocks that include all the necessary terminal commands.
+Do not install globally. Do not use sudo.
+Do not explain the code, just give the commands.
+Do not use placeholders, use example values (like . for a folder argument) if necessary.
+
+
+================================ Human Message =================================
+
+
+        Make a unix script that
+        a) installs dependencies
+        b) runs all necessary parts of the codebase (in parallel if necessary)
+        
+Information about the codebase:
+
+```
+File: Structure
+1 coupon_system/
+2 coupon_system/
+3 settings.py
+4 urls.py
+5 wsgi.py
+6 __init__.py
+7 apps/
+8 coupons/
+9 models.py
+10 views.py
+11 urls.py
+12 templates/
+13 base.html
+14 coupon_list.html
+15 coupon_detail.html
+16 __init__.py
+17 __pycache__/
+18 requirements.txt
+19 manage.py
+
+File: requirements.txt
+1 Django==3.2.5
+
+File: coupon_system/settings.py
+1 INSTALLED_APPS = [
+2     'django.contrib.admin',
+3     'django.contrib.auth',
+4     'django.contrib.contenttypes',
+5     'django.contrib.sessions',
+6     'django.contrib.messages',
+7     'django.contrib.staticfiles',
+8     'coupons',
+9 ]
+10 
+11 DATABASES = {
+12     'default': {
+13         'ENGINE': 'django.db.backends.sqlite3',
+14         'NAME': BASE_DIR / 'db.sqlite3',
+15     }
+16 }
+17 
+18 STATIC_URL = '/static/'
+
+File: coupon_system/urls.py
+1 from django.contrib import admin
+2 from django.urls import path, include
+3 
+4 urlpatterns = [
+5     path('admin/', admin.site.urls),
+6     path('', include('coupons.urls')),
+7 ]
+
+File: apps/coupons/models.py
+1 from django.db import models
+2 
+3 class Coupon(models.Model):
+4     name = models.CharField(max_length=255)
+5     description = models.TextField()
+6     expiration_date = models.DateField()
+7     is_active = models.BooleanField(default=True)
+8 
+9     def __str__(self):
+10         return self.name
+
+File: apps/coupons/views.py
+1 from django.shortcuts import render
+2 from .models import Coupon
+3 
+4 def coupon_list(request):
+5     coupons = Coupon.objects.all()
+6     return render(request, 'coupon_list.html', {'coupons': coupons})
+7 
+8 def coupon_detail(request, pk):
+9     coupon = Coupon.objects.get(pk=pk)
+10     return render(request, 'coupon_detail.html', {'coupon': coupon})
+
+File: apps/coupons/urls.py
+1 from django.urls import path
+2 from . import views
+3 
+4 urlpatterns = [
+5     path('coupons/', views.coupon_list, name='coupon_list'),
+6     path('coupons/<pk>/', views.coupon_detail, name='coupon_detail'),
+7 ]
+
+File: templates/base.html
+1 <!DOCTYPE html>
+2 <html>
+3 <head>
+4     <title>Coupon System</title>
+5 </head>
+6 <body>
+7     <h1>Coupon System</h1>
+8     <ul>
+9         <li><a href="{% url 'coupon_list' %}">Coupons</a></li>
+10     </ul>
+11     {% block content %}{% endblock %}
+12 </body>
+13 </html>
+
+File: templates/coupon_list.html
+1 {% extends 'base.html' %}
+2 
+3 {% block content %}
+4     <h2>Coupons</h2>
+5     <ul>
+6         {% for coupon in coupons %}
+7             <li><a href="{% url 'coupon_detail' coupon.pk %}">{{ coupon.name }}</a></li>
+8         {% endfor %}
+9     </ul>
+10 {% endblock %}
+
+File: templates/coupon_detail.html
+1 {% extends 'base.html' %}
+2 
+3 {% block content %}
+4     <h2>{{ coupon.name }}</h2>
+5     <p>{{ coupon.description }}</p>
+6     <p>Expiration Date: {{ coupon.expiration_date }}</p>
+7 {% endblock %}
+
+```
+
+================================== Ai Message ==================================
+
+Here is the Unix script that installs dependencies and runs the codebase:
+```
+#!/bin/bash
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the Django development server
+python manage.py makemigrations
+python manage.py migrate
+python manage.py runserver
+```
